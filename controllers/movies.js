@@ -35,7 +35,7 @@ module.exports.deleteMovieFromMyList = (req, res, next) => {
   Movie
     .findById(req.params._id)
     .then((movie) => {
-      if (movie.owner._id === req.user._id) {
+      if (movie.owner._id.toString() === req.user._id) {
         Movie
           .findByIdAndRemove(req.params._id)
           .then(() => {

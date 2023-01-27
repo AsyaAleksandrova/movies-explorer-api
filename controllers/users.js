@@ -88,7 +88,7 @@ module.exports.updateMyUser = (req, res, next) => {
   User
     .findByIdAndUpdate(
       req.user._id,
-      { name: req.name, email: req.email },
+      { name: req.body.name, email: req.body.email },
       { new: true, runValidators: true },
     )
     .then((user) => {
