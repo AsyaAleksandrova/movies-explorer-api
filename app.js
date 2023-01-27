@@ -38,6 +38,8 @@ app.post('/signup', validateNewUser, registerUser);
 app.post('/signin', validateAuth, loginUser);
 app.post('/signout', checktoken, logoutUser);
 
+app.use('/users', checktoken, require('./routes/users'));
+
 app.use((req, res, next) => {
   next(new NotFoundError('Не корректно задан адрес запроса'));
 });

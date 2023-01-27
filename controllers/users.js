@@ -72,3 +72,35 @@ module.exports.logoutUser = (req, res, next) => {
       next(new OtherServerError(`Что-то пошло не так: ${err.message}`));
     });
 };
+
+module.exports.getMyUser = (req, res, next) => {
+  User
+    .findById(req.user._id)
+    .then((user) => {
+      res.status(200).send(user);
+    })
+    .catch((err) => {
+      next(new OtherServerError(`Что-то пошло не так: ${err.message}`));
+    });
+};
+
+module.exports.updateMyUser = (req, res, next) => {
+  User
+    .findByIdAndUpdate(
+      req.user._id,
+      { name: req.name, email: req.email },
+      { new: true, runValidators: true },
+    )
+    .then((user) => {
+      res.status(200).send(user);
+    })
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new ValidationError(`Переданые некорректные данные при изменении данных пользователя: ${err.message}`));
+      } else if (err.code === MONGO_DUPLICATE_ERROR_CODE) {
+        next(new ConflictError('Пользователь с таким email уже зарегистрирован'));
+      } else {
+        next(new OtherServerError(`Что-то пошло не так: ${err.message}`));
+      }
+    });
+};
