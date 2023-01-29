@@ -1,8 +1,11 @@
+/* eslint-disable import/no-extraneous-dependencies */
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const { errors } = require('celebrate');
 const errorHandler = require('./middlewares/errorhandler');
 const NotFoundError = require('./errors/NotFoundError');
@@ -13,13 +16,22 @@ const checktoken = require('./middlewares/checktoken');
 const { registerUser, loginUser, logoutUser } = require('./controllers/users');
 require('dotenv').config();
 
-const { PORT, MONGO_URL, CORS_ORIGIN } = process.env;
+const {
+  PORT = 3000, MONGO_URL, CORS_ORIGIN, NODE_ENV,
+} = process.env;
 
 const app = express();
 
 app.use(cors({
-  origin: CORS_ORIGIN,
+  origin: NODE_ENV === 'production' ? CORS_ORIGIN : 'http://localhost:3000',
   credentials: true,
+}));
+
+app.use(helmet());
+
+app.use(rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 150,
 }));
 
 app.use(bodyParser.json());
@@ -28,7 +40,7 @@ app.use(cookieParser());
 
 mongoose.set('strictQuery', true);
 
-mongoose.connect(MONGO_URL, {
+mongoose.connect(NODE_ENV === 'production' ? MONGO_URL : 'mongodb://localhost:27017/bitfilmsdb', {
   useNewUrlParser: true,
 });
 
