@@ -9,7 +9,7 @@ const validateNewMovie = celebrate({
     image: Joi.string().required().regex(/https*:\/\/\w+/),
     trailerLink: Joi.string().required().regex(/https*:\/\/\w+/),
     thumbnail: Joi.string().required().regex(/https*:\/\/\w+/),
-    movieId: Joi.string().required(),
+    movieId: Joi.number().required(),
     nameRU: Joi.string().required(),
     nameEN: Joi.string().required(),
   }),

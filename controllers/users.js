@@ -3,8 +3,14 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
 const { NODE_ENV, JWT_KEY } = process.env;
-const MONGO_DUPLICATE_ERROR_CODE = 11000;
-const MESSAGE_AUTH = 'Неправильные почта или пароль';
+
+const {
+  MONGO_DUPLICATE_ERROR_CODE,
+  MESSAGE_OTHER_ERROR,
+  MESSAGE_AUTH,
+  MESSAGE_CONFLICT_EMAIL,
+  MESSAGE_VALIDATION,
+} = require('../errors/ErrorMessage');
 const ConflictError = require('../errors/ConflictError');
 const ValidationError = require('../errors/ValidationError');
 const OtherServerError = require('../errors/OtherServerError');
@@ -24,11 +30,11 @@ module.exports.registerUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new ValidationError(`Переданы некорректные данные при создании пользователя: ${err.message}`));
+        next(new ValidationError(`${MESSAGE_VALIDATION + err.message}`));
       } else if (err.code === MONGO_DUPLICATE_ERROR_CODE) {
-        next(new ConflictError('Пользователь с таким email уже зарегистрирован'));
+        next(new ConflictError(MESSAGE_CONFLICT_EMAIL));
       } else {
-        next(new OtherServerError(`Что-то пошло не так: ${err.message}`));
+        next(new OtherServerError(`${MESSAGE_OTHER_ERROR + err.message}`));
       }
     });
 };
@@ -56,7 +62,7 @@ module.exports.loginUser = (req, res, next) => {
       if (err.name === 'DocumentNotFoundError') {
         next(new AuthError(MESSAGE_AUTH));
       } else {
-        next(new OtherServerError(`Что-то пошло не так: ${err.message}`));
+        next(new OtherServerError(`${MESSAGE_OTHER_ERROR + err.message}`));
       }
     });
 };
@@ -69,7 +75,7 @@ module.exports.logoutUser = (req, res, next) => {
       res.status(200).json({ message: 'OK' });
     })
     .catch((err) => {
-      next(new OtherServerError(`Что-то пошло не так: ${err.message}`));
+      next(new OtherServerError(`${MESSAGE_OTHER_ERROR + err.message}`));
     });
 };
 
@@ -80,7 +86,7 @@ module.exports.getMyUser = (req, res, next) => {
       res.status(200).send(user);
     })
     .catch((err) => {
-      next(new OtherServerError(`Что-то пошло не так: ${err.message}`));
+      next(new OtherServerError(`${MESSAGE_OTHER_ERROR + err.message}`));
     });
 };
 
@@ -96,11 +102,11 @@ module.exports.updateMyUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new ValidationError(`Переданые некорректные данные при изменении данных пользователя: ${err.message}`));
+        next(new ValidationError(`${MESSAGE_VALIDATION + err.message}`));
       } else if (err.code === MONGO_DUPLICATE_ERROR_CODE) {
-        next(new ConflictError('Пользователь с таким email уже зарегистрирован'));
+        next(new ConflictError(MESSAGE_CONFLICT_EMAIL));
       } else {
-        next(new OtherServerError(`Что-то пошло не так: ${err.message}`));
+        next(new OtherServerError(`${MESSAGE_OTHER_ERROR + err.message}`));
       }
     });
 };
