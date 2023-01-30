@@ -39,9 +39,9 @@ app.use(requestLogger);
 
 app.use(limiter);
 
-app.use('/', require('./routes/auth'));
-app.use('/users', checktoken, require('./routes/users'));
-app.use('/movies', checktoken, require('./routes/movies'));
+app.use('/api', require('./routes/auth'));
+app.use('/api/users', checktoken, require('./routes/users'));
+app.use('/api/movies', checktoken, require('./routes/movies'));
 app.use('/', require('./routes/error'));
 
 app.use(errorLogger);
