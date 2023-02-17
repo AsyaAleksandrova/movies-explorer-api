@@ -23,7 +23,7 @@ module.exports.registerUser = (req, res, next) => {
       const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_KEY : 'dev-secret', { expiresIn: '10d' });
       res
         .cookie('jwt', token, {
-          maxAge: 10 * 24 * 60 * 60 * 1000, httpOnly: true, SameSite: 'Lax', Secure: true,
+          maxAge: 10 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'None', secure: true,
         })
         .status(201)
         .send({ user: { name: user.name, email: user.email, _id: user._id } });
@@ -53,7 +53,7 @@ module.exports.loginUser = (req, res, next) => {
           res
             .status(200)
             .cookie('jwt', token, {
-              maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, SameSite: 'Lax', Secure: true,
+              maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'None', secure: true,
             })
             .send({ user: { name: user.name, email: user.email, _id: user._id } });
         }
