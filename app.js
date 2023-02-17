@@ -19,7 +19,7 @@ const {
 const app = express();
 
 app.use(cors({
-  origin: NODE_ENV === 'production' ? CORS_ORIGIN : 'http://localhost:3000',
+  origin: NODE_ENV === 'production' ? CORS_ORIGIN : 'https://videoclub.nomoredomainsclub.ru',
   credentials: true,
 }));
 
